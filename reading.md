@@ -223,9 +223,11 @@
 ![cross_entropy_loss](src/FocalLoss.png)
 
 我们令
+
 ![cross_entropy_loss](src/FocalLoss2.png)
 
 公式便简化为
+
 ![cross_entropy_loss](src/FocalLoss3.png)
 
 #### Balanced Cross Entropy
@@ -237,7 +239,9 @@
 #### Focal Loss
 
 首先提出了一个调制因子，把标准交叉熵变成了这样：
+
 ![focal_loss](src/FocalLoss5.png)
+
 其中γ∈[0, 5]，γ=0时就退化成了标准交叉熵了。
 
 这里假设y=1(即正样本)，pt=0.99时，已经非常接近1了，所以它属于简易样本，在训练中应该占比较小的比重，通过调制因子的计算，这个样本的loss就比较小；再考虑pt=0.6的情况，这就属于难样本，分类的效果比较不好，它通过调制因子计算出的权重就比难样本大的多。
@@ -245,6 +249,7 @@
 #### 综合一下
 
 把上面的正负样本平衡和难易样本调制两个综合一下，得到了最终使用的公式：
+
 ![Focal_Loss](src/FocalLoss6.png)
 
 ### 效果
