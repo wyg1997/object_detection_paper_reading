@@ -211,3 +211,44 @@
 
 1. 对小目标的检测效果仍然不够好，因为小目标的特征是由比较少的卷积提取的，得到的特征不够多。
 2. 需要手动设定prior box的min_size，max_size和aspect_ratio的值，导致调试过程非常依赖经验。
+
+---
+
+## Focal Loss：解决正负样本、难易样本权重分配问题
+
+### 公式分析
+
+#### 标准交叉熵
+
+![cross_entropy_loss](src/FocalLoss.png)
+
+我们令
+![cross_entropy_loss](src/FocalLoss2.png)
+
+公式便简化为
+![cross_entropy_loss](src/FocalLoss3.png)
+
+#### Balanced Cross Entropy
+
+![balanced_cross_entropy_loss](src/FocalLoss4.png)
+
+它的用处在于，加了一个平衡因子α，对正负样本采用不同的权重，对正负样本的loss做一个平衡。
+
+#### Focal Loss
+
+首先提出了一个调制因子，把标准交叉熵变成了这样：
+![focal_loss](src/FocalLoss5.png)
+其中γ∈[0, 5]，γ=0时就退化成了标准交叉熵了。
+
+这里假设y=1(即正样本)，pt=0.99时，已经非常接近1了，所以它属于简易样本，在训练中应该占比较小的比重，通过调制因子的计算，这个样本的loss就比较小；再考虑pt=0.6的情况，这就属于难样本，分类的效果比较不好，它通过调制因子计算出的权重就比难样本大的多。
+
+#### 综合一下
+
+把上面的正负样本平衡和难易样本调制两个综合一下，得到了最终使用的公式：
+![Focal_Loss](src/FocalLoss6.png)
+
+### 效果
+
+![Focal_Loss](src/FocalLoss7.png)
+
+上面两个图表，横坐标表示的是正/负样本占总样本的百分比，纵坐标表示归一化的累计loss。可以看出，γ的变化对正样本的累积误差的影响并不是很大；但是对负样本有很大的影响了(γ=2时，多数背景样本的loss都很小)，说明对于简单的负样本的关注非常小。
